@@ -12,6 +12,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/kardianos/osext"
+
 	"golang.org/x/sys/windows/registry"
 	"golang.org/x/sys/windows/svc"
 	"golang.org/x/sys/windows/svc/eventlog"
@@ -46,11 +48,19 @@ func (windowsSystem) Interactive() bool {
 	return interactive
 }
 func (windowsSystem) New(i Interface, c *Config) (Service, error) {
+	setCurrentDirAsWorkDir()
 	ws := &windowsService{
 		i:      i,
 		Config: c,
 	}
 	return ws, nil
+}
+
+func setCurrentDirAsWorkDir() {
+	dir, _ := osext.ExecutableFolder()
+	if dir != "" {
+		os.Chdir(dir)
+	}
 }
 
 func init() {
@@ -261,6 +271,7 @@ func (ws *windowsService) Run() error {
 		}
 		return nil
 	}
+
 	err := ws.i.Start(ws)
 	if err != nil {
 		return err
