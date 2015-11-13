@@ -48,7 +48,6 @@ func (windowsSystem) Interactive() bool {
 	return interactive
 }
 func (windowsSystem) New(i Interface, c *Config) (Service, error) {
-	setCurrentDirAsWorkDir()
 	ws := &windowsService{
 		i:      i,
 		Config: c,
@@ -56,7 +55,7 @@ func (windowsSystem) New(i Interface, c *Config) (Service, error) {
 	return ws, nil
 }
 
-func setCurrentDirAsWorkDir() {
+func SetCurrentDirAsWorkDir() {
 	dir, _ := osext.ExecutableFolder()
 	if dir != "" {
 		os.Chdir(dir)
